@@ -1,0 +1,244 @@
+-- -------------------------------------------------------------------------- --
+-- Strip Miner 2 :
+--
+-- Better strip miner.
+--
+-- -------------------------------------------------------------------------- --
+--
+-- INVENTORY:
+-- [1][2][3][4]
+-- [5][6][7][8]
+-- [9][A][B][C]
+-- [D][E][F][0]
+-- 
+-- 1 : Fuel
+-- 2 : Torches
+-- 3 : Bridge material
+-- 4 : 
+-- Rest should be empty.
+--
+-- -------------------------------------------------------------------------- --
+
+
+local function CheckFuel()
+  if turtle.getFuelLevel() < 64 and turtle.getItemCount( 1 ) > 1 then
+    turtle.select( 1 )
+    turtle.refuel( 1 )
+  end
+  return
+end
+
+local function PlaceTorch()
+  if turtle.getItemCount( 2 ) > 1 then
+    turtle.select( 2 )
+    turtle.back()
+    turtle.placeUp()
+    turtle.forward()
+  end
+  return
+end
+
+local function PlaceTorchBehind()
+  if turtle.getItemCount( 2 ) > 1 then
+    turtle.back()
+    turtle.up()
+    turtle.select( 2 )
+    turtle.placeDown()
+    turtle.forward()
+    turtle.down()
+  end
+  return
+end
+
+local function DigForward()
+  -- Clear the bolck directly ahead, mov into it's space and then dig up.
+  -- If resulting 1x1x2 gap is in mid ar then place a filler block below
+  -- to bridg the gap.
+  -- 
+
+  while turtle.detect() do
+    turtle.dig()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.forward()
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.select( 3 )
+  while not turtle.detectDown() do
+    turtle.placeDown()
+  end
+
+  return
+end
+
+local function DigBranch()
+  -- Dig a 16-block tunnel with a torch at the end.
+
+  CheckFuel()
+  for step = 1, 16 do
+    DigForward()
+  end
+  PlaceTorch()
+  return
+end
+
+local function DigStub( direction )
+  -- Turn to the left or right, dig a 3-block tunnel and then turn left or right again.
+
+  if direction == "left" then
+    turtle.turnLeft()
+  else
+    turtle.turnRight()
+  end
+  DigForward()
+  DigForward()
+  DigForward()
+  if direction == "left" then
+    turtle.turnLeft()
+  else
+    turtle.turnRight()
+  end
+  return
+end
+
+local function ClearChamberOne()
+  -- Clear out a 3x3x2 chamber directly ahead with a torch in the middle (square 2). Park
+  -- ourselves at the right hand wall (square 8).
+  --
+  -- ===========
+  -- =[4][3][9]=
+  -- =[5][2][8]=
+  -- =[6][1][7]=
+  -- ==== X ====
+  --
+
+  CheckFuel()
+  DigForward()  -- [1]
+  DigForward()  -- [2]
+  DigForward()  -- [3]
+  PlaceTorchBehind()
+
+  turtle.turnLeft()
+  DigForward()  -- [4]
+
+  turtle.turnLeft()
+  DigForward()  -- [5]
+  DigForward()  -- [6]
+
+  turtle.turnLeft()
+  turtle.forward()
+  DigForward()  -- [7]
+
+  turtle.turnLeft()
+  DigForward()  -- [8]
+  DigForward()  -- [9]
+
+  turtle.back()
+  turtle.turnRight()
+  DigForward()
+
+  return
+end
+
+local function ClearChamberTwo()
+  -- Clear out a 3x3x2 chamber directly ahead with a torch in the middle (square 2). Park
+  -- ourselves at the opposite wall (square 3).
+  --
+  -- ===========
+  -- =[4][3][9]=
+  -- =[5][2][8]=
+  -- =[6][1][7]=
+  -- ==== X ====
+  --
+
+  CheckFuel()
+  DigForward()  -- [1]
+  DigForward()  -- [2]
+  DigForward()  -- [3]
+  PlaceTorchBehind()
+
+  turtle.turnLeft()
+  DigForward()  -- [4]
+
+  turtle.turnLeft()
+  DigForward()  -- [5]
+  DigForward()  -- [6]
+
+  turtle.turnLeft()
+  turtle.forward()
+  DigForward()  -- [7]
+
+  turtle.turnLeft()
+  DigForward()  -- [8]
+  DigForward()  -- [9]
+
+  turtle.turnLeft()
+  turtle.forward()
+  turtle.turnRight()
+  DigForward()
+
+  return
+end
+
+local function LinkCorridor()
+  -- Go to the left wall of the chamber ahead (avoiding the torch)
+  -- and dig the link corridor between the two chambers. Return to
+  -- the first chamber just forward of our starting position.
+
+  CheckFuel()
+  turtle.forward()
+  turtle.turnLeft()
+  turtle.forward()
+  turtle.turnRight()
+  turtle.forward()
+  turtle.turnLeft()
+  
+  for step = 1, 12 do
+    DigForward()
+  end
+
+  turtle.up()
+  for step = 1, 14 do
+    turtle.back()
+  end
+  turtle.down()
+
+  return
+end
+
+
+-- Start
+CheckFuel()
+
+ClearChamberOne()
+
+DigBranch()
+DigStub( "left" )
+DigBranch()
+DigStub( "right" )
+DigBranch()
+DigStub( "left" )
+DigBranch()
+DigStub( "right" )
+DigBranch()
+DigStub( "left" )
+DigBranch()
+
+ClearChamberTwo()
+
+DigBranch()
+DigStub( "left" )
+DigBranch()
+DigStub( "right" )
+DigBranch()
+DigStub( "left" )
+DigBranch()
+DigStub( "right" )
+DigBranch()
+DigStub( "left" )
+DigBranch()
+
+LinkCorridor()
+
