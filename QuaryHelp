@@ -1,0 +1,146 @@
+-- -------------------------------------------------------------------------- --
+-- QuarryHelp : PVFXQTix
+--
+-- Turtle script to place two landmarks at 64 blocks from the starting point,
+-- at right angles to each other.  This is handy for setting up huge quarries.
+--
+-- -------------------------------------------------------------------------- --
+--
+-- INVENTORY:
+-- [1][2][3][4]
+-- [5][6][7][8]
+-- [9][A][B][C]
+-- [D][E][F][0]
+-- 
+-- 1 : Fuel (>3 coal)
+-- 2 : Landmark (>2)
+-- 3 : Filler (>2)
+-- 4-0 : n/a
+--
+-- -------------------------------------------------------------------------- --
+
+local tArgs = { ... }
+local goLeft
+
+local function PrintHelp()
+  print( "Usage:" )
+  print( "QuarryHelp <l|r>" )
+  print( "  l -- place second marker to the LEFT." )
+  print( "  r -- place second marker to the RIGHT." )
+  return
+end
+
+local function CheckFuel()
+	if turtle.getFuelLevel() < 64 and turtle.getItemCount( 1 ) > 1 then
+	  turtle.select( 1 )
+	  turtle.refuel( 1 )
+	end
+	return
+end
+
+-- Check the commandline
+if not #tArgs == 1 then
+  PrintHelp()
+  return
+end
+
+if tArgs[ 1 ] == "r" then
+  print( "Will go RIGHT." )
+  goLeft = false
+elseif tArgs[ 1 ] == "l" then
+  print( "Will go LEFT." )
+  goLeft = true
+else
+  PrintHelp()
+  return
+end
+
+-- Go 64 forward.
+for step = 1, 63 do
+  while turtle.detect() do
+    turtle.dig()
+  end
+  CheckFuel()
+  turtle.forward()
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+end
+print( "64 from start." )
+
+-- Check for solid ground for landmark.
+if not turtle.detectDown() then
+  print( "No floor here..." )
+  turtle.select( 3 )
+  turtle.placeDown()
+end
+ 
+-- Place marker
+print( "MARK." )
+CheckFuel()
+turtle.back()
+turtle.select( 2 )
+turtle.place()
+ 
+-- Go back to start.
+print( "Going back." )
+for step = 2, 63 do
+  CheckFuel()
+  turtle.back()
+end
+ 
+-- Repeat at 90o
+if goLeft then
+  print( "Starting LEFT arm" )
+  turtle.turnLeft()
+else
+  print( "Starting RIGHT arm" )
+  turtle.turnRight()
+end
+ 
+-- Go 64 forward.
+for step = 1, 63 do
+  while turtle.detect() do
+    turtle.dig()
+  end
+  CheckFuel()
+  turtle.forward()
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+end
+print( "64 from start again." )
+ 
+-- Check for solid ground for landmark.
+if not turtle.detectDown() then
+  print( "No floor here..." )
+  turtle.select( 3 )
+  turtle.placeDown()
+end
+ 
+-- Place marker
+print( "MARK." )
+CheckFuel()
+turtle.back()
+turtle.select( 2 )
+turtle.place()
+ 
+-- Go back to start.
+print( "Going back." )
+for step = 2, 63 do
+  CheckFuel()
+  turtle.back()
+end
+ 
+print( "MARK." )
+turtle.up()
+turtle.select( 2 )
+turtle.placeDown()
+if goLeft then
+  turtle.turnRight()
+else
+  turtle.turnLeft()
+end
+ 
+
+-- Done.
