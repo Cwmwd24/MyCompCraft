@@ -1,0 +1,114 @@
+-- -------------------------------------------------------------------------- --
+-- Strip Miner : BHGp2V48
+--
+-- Turtle script to dig out a strip mine. Starting from initial position a
+-- 1x2x8 tunnel is dug out with a torch either end, bridging gaps. At the end of
+-- each tunnel the turtle will dig out 3 to the left and then start the next
+-- 1x2x8 tunnel to the left again. This is repeated 'till we're out of fuel, torches
+-- or room.
+--
+-- -------------------------------------------------------------------------- --
+--
+-- INVENTORY:
+-- [1][2][3][4]
+-- [5][6][7][8]
+-- [9][A][B][C]
+-- [D][E][F][0]
+-- 
+-- 1 : Fuel
+-- 2 : Torches
+-- 3 : Bridge material
+-- 4 :
+-- Rest should be empty.
+--
+-- -------------------------------------------------------------------------- --
+ 
+local function CheckFuel()
+  if turtle.getFuelLevel() < 64 and turtle.getItemCount( 1 ) > 1 then
+    turtle.select( 1 )
+    turtle.refuel( 1 )
+  end
+  return
+end
+ 
+local function PlaceTorch()
+  if turtle.getItemCount( 2 ) > 1 then
+    turtle.select( 2 )
+    turtle.place()
+  end
+  return
+end
+ 
+local function DigBranch()
+  for step = 1, 9 do
+    while turtle.detect() do
+      turtle.dig()
+    end
+    turtle.forward()
+    while turtle.detectUp() do
+      turtle.digUp()
+    end
+    while not turtle.detectDown() do
+      turtle.select( 3 )
+      turtle.placeDown()
+    end
+    CheckFuel()
+  end
+  return
+end
+ 
+local function DigTurn()
+  while turtle.detect() do
+    turtle.dig()
+  end
+  turtle.forward()
+ 
+  turtle.turnLeft()
+  turtle.turnLeft()
+  PlaceTorch()
+  turtle.turnLeft()
+  turtle.turnLeft()
+ 
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+  while not turtle.detectDown() do
+    turtle.select( 3 )
+    turtle.placeDown()
+  end  
+  while turtle.detect() do
+    turtle.dig()
+  end
+  turtle.forward()
+ 
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+  while not turtle.detectDown() do
+    turtle.select( 3 )
+    turtle.placeDown()
+  end  
+  while turtle.detect() do
+    turtle.dig()
+  end
+  turtle.forward()
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+  CheckFuel()
+  return
+end
+ 
+-- Start
+CheckFuel()
+while turtle.getFuelLevel() > 16 and turtle.getItemCount( 1 ) > 1 and turtle.getItemCount( 2 ) > 1 do
+  DigBranch()
+  turtle.turnLeft()
+  DigTurn()
+  turtle.turnLeft()
+ 
+  DigBranch()
+  turtle.turnRight()
+  DigTurn()
+  turtle.turnRight()
+end
