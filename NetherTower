@@ -1,0 +1,75 @@
+-- -------------------------------------------------------------------------- --
+-- NetherTower : RRMkQrvf
+--
+-- Turtle script to build a 3x3 tower to the Nether ceiling -- beware of falling
+-- lava!!!
+--
+-- -------------------------------------------------------------------------- --
+--
+-- INVENTORY:
+-- [1][2][3][4]
+-- [5][6][7][8]
+-- [9][A][B][C]
+-- [D][E][F][0]
+-- 
+-- 1 : Fuel
+-- Rest should be tower material.
+--
+-- -------------------------------------------------------------------------- --
+
+local tArgs = { ... }
+local height = 0
+
+local function PrintHelp()
+  print( "Usage:" )
+  print( "NetherTower <height>" )
+  print( "  height -- starting height of turtle." )
+  return
+end
+
+local function CheckFuel()
+  if turtle.getFuelLevel() < 64 and turtle.getItemCount( 1 ) > 1 then
+    turtle.select( 1 )
+    turtle.refuel( 1 )
+  end
+  return
+end
+
+-- Check the commandline
+if not #tArgs == 1 then
+  PrintHelp()
+  return
+end
+
+if tArgs[ 1 ] > "0" then
+  height = tArgs[ 1 ]
+else
+  PrintHelp()
+  return
+end
+
+
+-- Start with main shaft.
+for step = height, 128 do
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+  CheckFuel()
+  turtle.up()
+  if not turtle.detect() then
+    turtle.select( 2 )
+    turtle.place()
+  end
+end
+turtle.turnLeft()
+if not turtle.detect() then
+  turtle.select( 2 )
+  turtle.place()
+end
+for step = height, 128 do
+  turtle.down()
+  if not turtle.detect() then
+    turtle.select( 2 )
+    turtle.place()
+  end
+end
