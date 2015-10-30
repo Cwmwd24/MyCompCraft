@@ -141,6 +141,5 @@ if goLeft then
 else
   turtle.turnLeft()
 end
- 
 
--- Done.
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --

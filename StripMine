@@ -112,3 +112,5 @@ while turtle.getFuelLevel() > 16 and turtle.getItemCount( 1 ) > 1 and turtle.get
   DigTurn()
   turtle.turnRight()
 end
+
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --

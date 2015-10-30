@@ -208,37 +208,52 @@ local function LinkCorridor()
   return
 end
 
+local function LeftNetwork()
+  -- Dig out the left-hand side zig-zag network.
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+  DigStub( "right" )
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+  DigStub( "right" )
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+  
+  return
+end
+
+local function RightNetwork()
+  -- Dig out the right-hand side zig-zag network.
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+  DigStub( "right" )
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+  DigStub( "right" )
+  DigBranch()
+  DigStub( "left" )
+  DigBranch()
+
+  return
+end
+
 
 -- Start
 CheckFuel()
 
 ClearChamberOne()
 
-DigBranch()
-DigStub( "left" )
-DigBranch()
-DigStub( "right" )
-DigBranch()
-DigStub( "left" )
-DigBranch()
-DigStub( "right" )
-DigBranch()
-DigStub( "left" )
-DigBranch()
+LeftNetwork()
 
 ClearChamberTwo()
 
-DigBranch()
-DigStub( "left" )
-DigBranch()
-DigStub( "right" )
-DigBranch()
-DigStub( "left" )
-DigBranch()
-DigStub( "right" )
-DigBranch()
-DigStub( "left" )
-DigBranch()
+RightNetwork()
 
 LinkCorridor()
 
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --

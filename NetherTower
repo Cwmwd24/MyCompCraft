@@ -73,3 +73,5 @@ for step = height, 128 do
     turtle.place()
   end
 end
+
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --

@@ -18,10 +18,10 @@ local reactor = peripheral.wrap( 'BigReactors-Reactor_2' )
 --
 -- Variables
 --
-local running = true										-- Loop control
-local rodCount = reactor.getNumberOfControlRods()		    -- Number of control rods
-local bufferState											-- Energy in the buffer
-local fuelAvailable											-- Available fuel
+local running = true                                    -- Loop control
+local rodCount = reactor.getNumberOfControlRods()       -- Number of control rods
+local bufferState                                       -- Energy in the buffer
+local fuelAvailable	                                -- Available fuel
 local cntIndex
 local cntTarget
 local cntSelect 
@@ -237,7 +237,7 @@ local function showFuelBar()
   local n = math.floor( 30 * ( reactor.getFuelAmount() / reactor.getFuelAmountMax() ) )
   local t = ""
   
-  for i=0,(n-1) do t = t .. " " end
+  for i = 0, ( n - 1 ) do t = t .. " " end
   term.setBackgroundColor( colors.cyan )
   term.setTextColor( colors.lightGray )
   return io.write( t )
@@ -252,7 +252,7 @@ local function showPowerBar()
   local n = math.floor( 30 * ( reactor.getEnergyStored() / 10000000 ) )
   local t = ""
   
-  for i=0,(n-1) do t = t .. " " end
+  for i = 0, ( n - 1 ) do t = t .. " " end
   term.setBackgroundColor( colors.blue )
   term.setTextColor( colors.lightGray )
   return io.write( t )
@@ -269,20 +269,20 @@ end -- showPowerBar
 -- Sanity checks...
 --
 if not term.isColor() then
-	term.clear()
-	term.setCursorPos(  1,  1 )
-    write( "==[ Need Advanced Computer! ]==" )
-	running = false
+  term.clear()
+  term.setCursorPos(  1,  1 )
+  write( "==[ Need Advanced Computer! ]==" )
+  running = false
 end
 if not reactor.getConnected() then
-	term.clear()
-	term.setBackgroundColor( colors.orange )
-	term.setTextColor( colors.red )
-	term.setCursorPos(  1,  1 )
-    write( "==[ Not Connected to Reactor ]==" )
-	term.setBackgroundColor( colors.black )
-	term.setTextColor( colors.white )
-	running = false
+  term.clear()
+  term.setBackgroundColor( colors.orange )
+  term.setTextColor( colors.red )
+  term.setCursorPos(  1,  1 )
+  write( "==[ Not Connected to Reactor ]==" )
+  term.setBackgroundColor( colors.black )
+  term.setTextColor( colors.white )
+  running = false
 end
 
 -- -------------------------------------------------------------------------- --
@@ -290,102 +290,101 @@ end
 -- Main loop
 --
 while running do
+  --[[
+  *
+  * Collect information
+  *
+  ]]--
+  bufferState = reactor.getEnergyStored()
+  fuelAvailable = reactor.getFuelAmount()
 
-	--[[
-	*
-	* Collect information
-	*
-	]]--
-	bufferState = reactor.getEnergyStored()
-	fuelAvailable = reactor.getFuelAmount()
+  --[[
+  *
+  * Draw the screen.
+  *
+  ]]--
+  term.setBackgroundColor( colors.black ); term.clear()
+  term.setTextColor( colors.cyan )
+  term.setCursorPos(  1,  1 ); write( "==[" )
+  term.setCursorPos( 17,  1 ); write( ".:." )
+  term.setCursorPos( 30,  1 ); write( "]=====[" )
+  term.setCursorPos( 42,  1 ); write( "|" )
+  term.setCursorPos( 49,  1 ); write( "]==" )
+  term.setCursorPos(  1,  2 ); write( "===================================================" )
+  term.setCursorPos(  1, 13 ); write( "==============================================[Q]==" )
+  term.setTextColor( colors.white )
+  term.setCursorPos(  5,  1 ); write( "ReactorHelp" )
+  term.setCursorPos( 21,  1 ); showTime()
+  term.setCursorPos(  2,  9 ); write( "Core Temp. " ); showTemperature()
+  term.setCursorPos(  2, 10 ); write( "Rod Count  "..rodCount )
+  term.setTextColor( colors.lime )
+  term.setCursorPos( 11,  4 ); write(          "0%  .    .    .    .    . 100%" )
+  term.setCursorPos(  2,  5 ); write( "BUFFER  :                              :    RF/t" )
+  term.setCursorPos(  2,  6 ); write( "CONTROL :                              :    %" )
+  term.setCursorPos(  2,  7 ); write( "FUEL    :                              :    B/t" )
 
-	--[[
-	*
- 	* Draw the screen.
-	*
-	]]--
-	term.setBackgroundColor( colors.black ); term.clear()
-	term.setTextColor( colors.cyan )
-	term.setCursorPos(  1,  1 ); write( "==[" )
-	term.setCursorPos( 17,  1 ); write( ".:." )
-	term.setCursorPos( 30,  1 ); write( "]=====[" )
-	term.setCursorPos( 42,  1 ); write( "|" )
-	term.setCursorPos( 49,  1 ); write( "]==" )
-	term.setCursorPos(  1,  2 ); write( "===================================================" )
-	term.setCursorPos(  1, 13 ); write( "==============================================[Q]==" )
-	term.setTextColor( colors.white )
-	term.setCursorPos(  5,  1 ); write( "ReactorHelp" )
-	term.setCursorPos( 21,  1 ); showTime()
-	term.setCursorPos(  2,  9 ); write( "Core Temp. " ); showTemperature()
-	term.setCursorPos(  2, 10 ); write( "Rod Count  "..rodCount )
-	term.setTextColor( colors.lime )
-	term.setCursorPos( 11,  4 ); write(          "0%  .    .    .    .    . 100%" )
-	term.setCursorPos(  2,  5 ); write( "BUFFER  :                              :    RF/t" )
-	term.setCursorPos(  2,  6 ); write( "CONTROL :                              :    %" )
-	term.setCursorPos(  2,  7 ); write( "FUEL    :                              :    B/t" )
+  -- If we're out of fuel we need to quit
+  if fuelAvailable < 1000 then
+    term.setBackgroundColor( colors.red )
+    term.setTextColor( colors.black )
+    term.setCursorPos( 3, 14 )
+    write( "*** Out of Fuel! ***" )
+    term.setBackgroundColor( colors.black )
+    reactor.setActive( false )
+    running = false
+  else
+    reactor.setActive( true )
+  end
 
-	-- If we're out of fuel we need to quit
-	if fuelAvailable < 1000 then
-	  term.setBackgroundColor( colors.red )
-	  term.setTextColor( colors.black )
-	  term.setCursorPos( 3, 14 )
-	  write( "*** Out of Fuel! ***" )
-	  term.setBackgroundColor( colors.black )
-	  reactor.setActive( false )
-	  running = false
-	else
-	  reactor.setActive( true )
-	end
+  -- Control is proportional to energy deffecit when we drop below 8MRF.
+  cntTarget = 100 - math.floor( 100 * ( bufferState / 10000000 ) )
+  cntSelect = ( cntTarget / 100 ) * rodCount
+  for cntIndex = 0, rodCount-1  do
+    if cntIndex < cntSelect then
+      reactor.setControlRodLevel( cntIndex,   0 )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "..cntIndex.. " " )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " . " )
+    elseif cntSelect <= cntIndex then
+      reactor.setControlRodLevel( cntIndex, 100 )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "..cntIndex.." " )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " O " )
+    else
+      reactor.setControlRodLevel( cntIndex, cntSelect )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "...." " )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " o " )
+    end
+  end
+  term.setBackgroundColor( colors.blue )
+  term.setTextColor( colors.white )
+  term.setCursorPos( 3, 14 )
+  write( "*** ["..cntSelect.."] = "..cntTarget.."%***" )
+  term.setBackgroundColor( colors.black )
 
-	-- Control is proportional to energy deffecit when we drop below 8MRF.
-	cntTarget = 100 - math.floor( 100 * ( bufferState / 10000000 ) )
-	cntSelect = ( cntTarget / 100 ) * rodCount
-	for cntIndex = 0, rodCount-1  do
-	  if cntIndex < cntSelect then
-		reactor.setControlRodLevel( cntIndex,   0 )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "..cntIndex.. " " )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " . " )
-	  elseif cntSelect <= cntIndex then
-		reactor.setControlRodLevel( cntIndex, 100 )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "..cntIndex.." " )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " O " )
-	  else
-		reactor.setControlRodLevel( cntIndex, cntSelect )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "...." " )
-                term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " o " )
-	  end
-	end
-	term.setBackgroundColor( colors.blue )
-	term.setTextColor( colors.white )
-	term.setCursorPos( 3, 14 )
-	write( "*** ["..cntSelect.."] = "..cntTarget.."%***" )
-	term.setBackgroundColor( colors.black )
+  --[[
+  *
+  * Draw dynamic stuff.
+  *
+  ]]--
+  term.setCursorPos( 38,  1 ); showActive()
+  term.setCursorPos( 44,  1 ); showReaction()
 
-	--[[
-	*
-	* Draw dynamic stuff.
-	*
-	]]--
-	term.setCursorPos( 38,  1 ); showActive()
-	term.setCursorPos( 44,  1 ); showReaction()
+  term.setCursorPos( 11,  5 ); showPowerBar(); term.setBackgroundColor( colors.black )
+  term.setCursorPos( 42,  5 ); showPowerRate()
 
-	term.setCursorPos( 11,  5 ); showPowerBar(); term.setBackgroundColor( colors.black )
-	term.setCursorPos( 42,  5 ); showPowerRate()
+  term.setCursorPos( 11,  6 ); showControlBar( cntTarget ); term.setBackgroundColor( colors.black )
+  term.setCursorPos( 43,  6 ); showControlRate( cntTarget )
 
-	term.setCursorPos( 11,  6 ); showControlBar( cntTarget ); term.setBackgroundColor( colors.black )
-	term.setCursorPos( 43,  6 ); showControlRate( cntTarget )
+  term.setCursorPos( 11,  7 ); showFuelBar(); term.setBackgroundColor( colors.black )
+  term.setCursorPos( 42,  7 ); showBurnRate()
 
-	term.setCursorPos( 11,  7 ); showFuelBar(); term.setBackgroundColor( colors.black )
-	term.setCursorPos( 42,  7 ); showBurnRate()
 
-	
-	os.startTimer( 1.5 )
-    e,k = os.pullEvent()
-    if e == "key" and k == keys.q then
-	  running = false
-	else
-	  running = true
-	end
+  os.startTimer( 1.5 )
+  e,k = os.pullEvent()
+  if e == "key" and k == keys.q then
+    running = false
+  else
+    running = true
+  end
 end -- main loop
 
 term.setBackgroundColor( colors.black ); term.setTextColor( colors.white ); term.setCursorPos( 1, 15 )
@@ -402,3 +401,5 @@ reactor.getControlRodLevel(0)
 reactor.getFuelTemperature()
 reactor.setAllControlRodLevels(0)
 ]]--
+
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --
