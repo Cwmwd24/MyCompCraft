@@ -1,0 +1,144 @@
+-- -------------------------------------------------------------------------- --
+-- Strip Miner 2 Prep :
+--
+-- Prepare a central shaft for a better strip miner.
+--
+-- -------------------------------------------------------------------------- --
+--
+-- INVENTORY:
+-- [1][2][3][4]
+-- [5][6][7][8]
+-- [9][A][B][C]
+-- [D][E][F][0]
+-- 
+-- 1 : Fuel
+-- 2 : 
+-- Rest should be empty.
+--
+-- -------------------------------------------------------------------------- --
+
+
+local function CheckFuel()
+  if turtle.getFuelLevel() < 64 and turtle.getItemCount( 1 ) > 1 then
+    turtle.select( 1 )
+    turtle.refuel( 1 )
+  end
+  return
+end
+
+local function DigForward()
+  -- Clear the block directly ahead, move into it's space and then dig up.
+  -- If resulting 1x1x2 gap is in mid ar then place a filler block below
+  -- to bridg the gap.
+  -- 
+
+  while turtle.detect() do
+    turtle.dig()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.forward()
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  --[[
+  turtle.select( 3 )
+  while not turtle.detectDown() do
+    turtle.placeDown()
+  end
+  ]]--
+  return
+end
+
+local function DigDown()
+  -- Clear the block directly below and move into it.
+  -- 
+
+  if turtle.detectDown() then
+    if not turtle.digDown() then
+      return 0
+    end
+  end
+  turtle.down()
+
+  return 1
+end
+
+local function DigUp()
+  -- Clear the block directly above and move into it. Repeat.
+  -- 
+
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.up()
+
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.up()
+
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.up()
+
+  while turtle.detectUp() do
+    turtle.digUp()
+    sleep( 0.5 ) -- Pause to let sand/gravel fall!
+  end
+  turtle.up()
+
+  return
+end
+
+local function ClearChamber()
+  -- Clear out a 3x3x2 staging chamber. 
+  --
+
+  CheckFuel()
+  turtle.turnRight()
+  DigForward()  -- [1]
+  turtle.turnLeft()
+  DigForward()  -- [2]
+  DigForward()  -- [3]
+  turtle.turnLeft()
+  DigForward()  -- [2]
+  DigForward()  -- [3]
+  turtle.turnLeft()
+  DigForward()  -- [2]
+  DigForward()  -- [3]
+  turtle.turnLeft()
+  DigForward()  -- [2]
+  turtle.turnLeft()
+
+  return
+end
+
+
+-- Start
+local height = 0
+
+while DigDown() == 1 do
+  CheckFuel()
+  height = height + 1
+end
+print( "Gone down "..height.."m" )
+DigForward()
+turtle.turnLeft()
+turtle.turnLeft()
+ClearChamber()
+
+while height ~= 0 do
+  DigUp()
+  ClearChamber()
+  CheckFuel()
+  height = height - 4
+end
+turtle.forward()
+if height ~= then print( "Returned to "..( height * -1 ).."m" )
+
+ -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --
