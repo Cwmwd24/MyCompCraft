@@ -139,6 +139,6 @@ while height ~= 0 do
   height = height - 4
 end
 turtle.forward()
-if height ~= then print( "Returned to "..( height * -1 ).."m" )
+if height ~= 0 then print( "Returned to "..( height * -1 ).."m" ) end
 
  -- vim:set filetype=lua expandtab smarttab smartindent autoindent softtabstop=2 shiftwidth=2: --

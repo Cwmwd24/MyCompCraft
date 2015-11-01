@@ -350,7 +350,7 @@ while running do
       term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " O " )
     else
       reactor.setControlRodLevel( cntIndex, cntSelect )
-      term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "...." " )
+      term.setCursorPos(  13 + ( cntIndex * 3 ), 11 ); write( " "..cntIndex.." " )
       term.setCursorPos(  13 + ( cntIndex * 3 ), 12 ); write( " o " )
     end
   end
