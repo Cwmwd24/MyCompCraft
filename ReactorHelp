@@ -12,7 +12,7 @@
 --
 -- The reactor, adjust name to suit.
 --
-local reactor = peripheral.wrap( 'BigReactors-Reactor_2' )
+local reactor = peripheral.wrap( 'BigReactors-Reactor_0' )
 
 -- -------------------------------------------------------------------------- --
 --
@@ -237,6 +237,13 @@ local function showFuelBar()
   local n = math.floor( 30 * ( reactor.getFuelAmount() / reactor.getFuelAmountMax() ) )
   local t = ""
   
+  -- NEW: If fuel level drops below 75% then turn on a redstone signal.
+  if math.floor( 100 * ( reactor.getFuelAmount() / reactor.getFuelAmountMax() ) ) < 75 then
+    rs.setOutput( "bottom", true )
+  else
+    rs.setOutput( "bottom", false )
+  end
+
   for i = 0, ( n - 1 ) do t = t .. " " end
   term.setBackgroundColor( colors.cyan )
   term.setTextColor( colors.lightGray )
